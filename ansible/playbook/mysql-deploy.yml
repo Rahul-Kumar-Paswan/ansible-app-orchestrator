@@ -1,0 +1,8 @@
+---
+- name: Setup MySQL Database Server
+  hosts: dbserver
+  become: true
+  vars_files:
+    - ../roles/mysql/vars/main.yml
+  roles:
+    - roles/mysql

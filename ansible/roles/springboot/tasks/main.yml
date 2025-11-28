@@ -1,0 +1,72 @@
+---
+- name: Install Java and Maven
+  apt:
+    name:
+      "{{ springboot_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Create remote build directory
+  file:
+    path: "{{ springboot_remote_build_path }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Copy Spring Boot project to remote build directory
+  synchronize:
+    src: "{{ springboot_app_path }}/"
+    dest: "{{ springboot_remote_build_path }}"
+    recursive: yes
+    delete: no
+
+- name: Build Spring Boot JAR using Maven (skip tests)
+  command: mvn clean package -DskipTests
+  args:
+    chdir: "{{ springboot_remote_build_path }}"
+
+- name: Create /opt/{{ springboot_app_name }} directory
+  file:
+    path: "/opt/{{ springboot_app_name }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Find built JAR file
+  find:
+    paths: "{{ springboot_remote_build_path }}/target"
+    patterns: "*.jar"
+  register: jar_files
+
+- name: Copy JAR to /opt/{{ springboot_app_name }}
+  become: true
+  copy:
+    src: "{{ jar_files.files[0].path }}"
+    dest: "/opt/{{ springboot_app_name }}/app.jar"
+    remote_src: true
+
+- name: Deploy application.properties file
+  template:
+    src: application.properties.j2
+    dest: "/opt/{{ springboot_app_name }}/application.properties"
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+
+- name: Create systemd service for Spring Boot app
+  template:
+    src: springboot.service.j2
+    dest: "/etc/systemd/system/{{ springboot_app_name }}.service"
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start Spring Boot app
+  systemd:
+    name: "{{ springboot_app_name }}"
+    enabled: yes
+    state: restarted

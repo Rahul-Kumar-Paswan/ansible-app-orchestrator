@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: MIT-0
+---
+# tasks file for mysql
+
+- name: Install debconf-utils
+  become: true
+  apt:
+    name: debconf-utils
+    state: present
+    update_cache: yes
+
+- name: Preseed MySQL root password (Debian/Ubuntu)
+  become: true
+  debconf:
+    name: "mysql-server"
+    question: "mysql-server/root_password"
+    value: "{{ mysql_root_password }}"
+    vtype: "password"
+
+- name: Preseed MySQL root password confirmation
+  become: true
+  debconf:
+    name: "mysql-server"
+    question: "mysql-server/root_password_again"
+    value: "{{ mysql_root_password }}"
+    vtype: "password"
+
+- name: Install MySQL packages
+  become: true
+  apt:
+    name: "{{ mysql_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Install PyMySQL Python library
+  become: true
+  apt:
+    name: python3-pymysql
+    state: present
+
+- name: Start and enable MySQL service
+  become: true
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Ensure root user exists with password
+  become: true
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mysql_root_password }}"
+    plugin: mysql_native_password
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Allow root to login remotely
+  become: true
+  mysql_user:
+    name: root
+    host: "%"
+    password: "{{ mysql_root_password }}"
+    plugin: mysql_native_password
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Ensure application database exists
+  become: true
+  mysql_db:
+    name: "{{ mysql_database }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Ensure application database user exists
+  become: true
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    priv: "{{ mysql_database }}.*:ALL"
+    host: "%"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Allow MySQL to listen on all interfaces
+  become: true
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+  notify: restart mysql

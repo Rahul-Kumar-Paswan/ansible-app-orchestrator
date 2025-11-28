@@ -1,0 +1,10 @@
+#SPDX-License-Identifier: MIT-0
+---
+- hosts: webserver
+  tasks:
+    - name: check mysql is running
+      shell: systemctl is-active mysql
+      register: mysql_status
+      
+    - debug:
+      msg: "MySQL Status: {{ mysql_status.stdout }}"

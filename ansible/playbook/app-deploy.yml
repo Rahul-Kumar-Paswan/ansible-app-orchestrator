@@ -1,0 +1,12 @@
+---
+- name: Deploy Spring Boot Application
+  hosts: webserver
+  become: true
+  vars_files:
+    - ../roles/springboot/vars/main.yml
+    - ../roles/mysql/vars/main.yml  
+  vars:
+    db_host: "{{ hostvars['db']['ansible_host'] }}"
+    db_port: 3306
+  roles:
+    - roles/springboot

@@ -1,0 +1,12 @@
+[Unit]
+Description=Spring Boot Application - {{ springboot_app_name }}
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/opt/{{ springboot_app_name }}
+ExecStart=/usr/bin/java -jar /opt/{{ springboot_app_name }}/app.jar --spring.config.location=/opt/{{ springboot_app_name }}/application.properties
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
