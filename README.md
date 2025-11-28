@@ -25,21 +25,28 @@ This project demonstrates **real-world DevOps automation**, ideal for **producti
 ---
 ## 🧭 Table of Contents
 
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Architecture Diagram](#architecture-diagram)
-- [Project Structure](#project-structure)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Roles Overview](#roles-overview)
-- [Vault Usage](#vault-usage)
-- [Setup and Deployment](#setup-and-deployment)
-- [Adding More Web Servers](#adding-more-web-servers)
-- [Screenshots](#screenshots)
-- [Learning and Takeaways](#learning-and-takeaways)
-- [Future Enhancements](#future-enhancements)
-- [Author and Portfolio](#author-and-portfolio)
-- [License](#license)
+- [🚀 Project Overview](#-project-overview)
+  - [🔧 Application Stack](#-application-stack)
+  - [🧱 Infrastructure](#-infrastructure)
+- [✨ Features](#-features)
+  - [🧩 Role-based Automation](#-role-based-automation)
+  - [💾 Multi-server Deployment](#-multi-server-deployment)
+- [🧱 Architecture Diagram](#-architecture-diagram)
+- [📁 Project Structure](#-project-structure)
+- [🛠️ Tech Stack](#-tech-stack)
+- [⚙️ Prerequisites](#-prerequisites)
+- [🧩 Roles Overview](#-roles-overview)
+  - [🔹 MySQL Role](#-mysql-role)
+  - [🔹 Spring Boot Role](#-spring-boot-role)
+- [🔐 Vault Usage](#-vault-usage)
+- [⚙️ Setup and Deployment](#-setup-and-deployment)
+- [🔧 Adding More Web Servers](#-adding-more-web-servers)
+- [📸 Screenshots](#-screenshots)
+- [🎯 Learning and Takeaways](#-learning-and-takeaways)
+- [💡 Future Enhancements](#-future-enhancements)
+- [📝 Author and Portfolio](#-author-and-portfolio)
+- [📝 License](#-license)
+
 
 ---
 ## 🚀 Features
@@ -55,15 +62,25 @@ This project demonstrates **real-world DevOps automation**, ideal for **producti
 
 ---
 ## 🧱 Architecture Diagram
-```mermaid
-flowchart TD
-    AC[Ansible Control] --> W1[Web Server 1: Spring Boot]
-    AC --> W2[Web Server 2: Spring Boot]
-    AC --> W3[Web Server 3: Spring Boot]
-    W1 --> DB[MySQL DB]
-    W2 --> DB
-    W3 --> DB
-
+```text
+                    ┌──────────────────────┐
+                    │     Ansible Control   │
+                    │    (Your machine)     │
+                    └──────────┬───────────┘
+                               │ SSH + Vault
+     ┌─────────────────────────┼──────────────────────────┐
+     │                         │                          │
+┌──────────┐           ┌──────────┐              ┌──────────┐
+│  web-1   │           │  web-2   │              │  web-3   │
+│ Spring   │           │ Spring   │              │ Spring   │
+│ Boot App │           │ Boot App │              │ Boot App │
+└────┬─────┘           └────┬─────┘              └────┬─────┘
+     │                       │                         │
+     └──────────────┬────────┴──────────────┬─────────┘
+                    │                       │
+                ┌──────────┐ 3306/TCP  ┌──────────┐
+                │  DB EC2  │──────────▶│  MySQL   │
+                └──────────┘           └──────────┘
 
 ```
 
