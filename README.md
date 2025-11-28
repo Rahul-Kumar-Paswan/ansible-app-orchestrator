@@ -36,9 +36,9 @@ This project demonstrates **real-world DevOps automation**, ideal for **producti
 - [Setup and Deployment](#setup-and-deployment)
 - [Adding More Web Servers](#adding-more-web-servers)
 - [Screenshots](#screenshots)
-- [Learning & Takeaways](#learning--takeaways)
+- [Learning and Takeaways](#learning-and-takeaways)
 - [Future Enhancements](#future-enhancements)
-- [Author & Portfolio](#author--portfolio)
+- [Author and Portfolio](#author-and-portfolio)
 - [License](#license)
 
 ---
@@ -55,6 +55,7 @@ This project demonstrates **real-world DevOps automation**, ideal for **producti
 
 ---
 ## 🧱 Architecture Diagram
+```mermaid
                     ┌──────────────────────┐
                     │     Ansible Control   │
                     │    (Your machine)     │
@@ -74,6 +75,7 @@ This project demonstrates **real-world DevOps automation**, ideal for **producti
                 │  DB EC2  │──────────▶│  MySQL   │
                 └──────────┘           └──────────┘
 
+```
 
 ![alt text](./screenshots/architecture-diagram.png)
 
